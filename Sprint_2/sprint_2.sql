@@ -31,16 +31,13 @@ from transaction t
 where t.company_id in (select c.id from company c where c.id = t.company_id and c.country like "Germany"); 
 
 #3.2 Lista las empresas que han realizar transacciones por una cantidad superior a la mediana de todas las transacciones 
-select *
+select distinct(c.company_name)
 from company c
-where t.company_id > (select t.company_id 
-					  from transaction t 
-                      where c.id = t.company_id 
-                      group by t.amount 
-                      having Avg(t.amount))
-#group by t.amount 
-order by t.amount desc 
-;
+where id in (select t.company_id
+			from transaction t
+            where amount > (select AVG(t.amount) 
+							from transaction t));
+
 
 #3.3 Eliminaran del sistema las empresas que no tienen transacciones registradas, entrega el listado de aquellas empresas
 select t.declined
@@ -72,18 +69,16 @@ group by c.country
 order by ventas desc
 ;
 
-#EJERCICIO 3 
+
 
 /*
+#EJERCICIO 3 
 En tu empresa, se plantea un nuevo proyecto para lanzar algunas campañas 
 publicitarias para hacer competencia a la compañía "Non Institute". 
 Para lo cual, te piden la lista de todas las transacciones realizadas 
 por empresas que están situadas en el mismo país que esta compañía.
-
-Muestra el listado aplicando JOIN y subconsultes.
-Muestra el listado aplicando solo subconsultes.
 */
-
+#Muestra el listado aplicando JOIN y subconsultes.
 select *
 from company c Left Join transaction t 
 On c.id = t.company_id
