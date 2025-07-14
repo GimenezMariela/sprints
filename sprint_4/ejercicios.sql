@@ -1,25 +1,27 @@
 #Exercici 1
 -- Realitza una subconsulta que mostri tots els usuaris amb més de 80 transaccions utilitzant almenys 2 taules.
-SELECT u.name, t.amount
+SELECT u.name
 FROM american_european_users u 
-JOIN (
-    SELECT t.amount, t.user_id #, COUNT(*) AS total_transactions
+WHERE id IN (
+    SELECT COUNT(t.user_id) AS total_transactions
     FROM transaction t
-    where t.amount >= 80
-    GROUP BY t.amount, t.user_id
-) t ON u.id = t.user_id
-order by t.amount desc;
+    #where t.amount >= 80
+    GROUP BY t.user_id
+    having total_transactions >= 80
+    order by total_transactions desc
+) ;
 
 # Exercici 2
 -- Mostra la mitjana d'amount per IBAN de les targetes de crèdit a la companyia Donec Ltd, utilitza almenys 2 taules.
-select c.company_name, round(avg(t.amount),2) as mediana_amount 
-from transaction t join credit_card cc
-on t.card_id = cc.id 
-join companies c on t.business_id = c.company_id
-where c.company_name = "Donec Ltd"
-group by t.amount
-#having round(avg(t.amount),2)
-order by t.amount desc;
+SELECT 
+    cc.iban, round(AVG(t.amount),2) as mediana_iban 
+FROM transaction t
+JOIN credit_card cc ON t.card_id = cc.id
+JOIN companies c ON t.business_id = c.company_id
+WHERE c.company_name = 'Donec Ltd'
+group by cc.iban
+#having round(AVG(t.amount),2)
+;
 
 #Nivell 2
 -- Crea una nova taula que reflecteixi l'estat de les targetes de crèdit basat en si les últimes tres transaccions van ser declinades i genera la següent consulta:
@@ -48,6 +50,7 @@ FROM (
 WHERE fila <= 3
 GROUP BY card_id;
 
+select count(*) from card_status;
 	#Exercici 1
 -- Quantes targetes estan actives?
 select count(*) from card_status where status = "activa";
